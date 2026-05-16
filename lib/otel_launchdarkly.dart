@@ -1,0 +1,14 @@
+// Licensed under the Apache License, Version 2.0
+// Copyright 2025, Mindful Software LLC, All rights reserved.
+
+/// OpenTelemetry instrumentation for LaunchDarkly feature-flag
+/// evaluations.
+///
+/// Single helper `tracedLaunchDarklyEval(...)` wraps any flag
+/// variation call in an INTERNAL span carrying the OTel / OpenFeature
+/// `feature_flag.*` semantic-convention attributes (key,
+/// provider_name=launchdarkly, value, variant, context.id, default).
+library;
+
+export 'src/otel_launchdarkly.dart';
+export 'src/otel_launchdarkly_suppression.dart';
