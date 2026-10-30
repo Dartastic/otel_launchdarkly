@@ -1,14 +1,14 @@
-// Licensed under the Dartastic Pro Software License Agreement.
+// Licensed under the Apache License, Version 2.0
 // Copyright 2025-2026 Mindful Software LLC d/b/a Dartastic.io, All rights reserved.
 
-import 'package:dartastic_opentelemetry/dartastic_opentelemetry.dart';
+import 'package:dartastic_opentelemetry_api/dartastic_opentelemetry_api.dart';
 
 import 'otel_launchdarkly_suppression.dart';
 
 const _tracerName = 'dartastic_otel_libs_launchdarkly';
 const _providerName = 'launchdarkly';
 
-Tracer _tracer() => OTel.tracerProvider().getTracer(_tracerName);
+APITracer _tracer() => OTelAPI.tracerProvider().getTracer(_tracerName);
 
 /// Wraps a LaunchDarkly flag evaluation in an INTERNAL OTel span
 /// following the OpenFeature/OTel `feature_flag.*` semantic
@@ -60,24 +60,24 @@ Future<T> tracedLaunchDarklyEval<T>({
   final span = _tracer().startSpan(
     'feature_flag.evaluate $flagKey',
     kind: SpanKind.internal,
-    attributes: OTel.attributesFromMap(m),
+    attributes: OTelAPI.attributesFromMap(m),
   );
   try {
     final value = await invoke();
     final extra = <Attribute<Object>>[
-      OTel.attributeString('feature_flag.value', value.toString()),
+      OTelAPI.attributeString('feature_flag.value', value.toString()),
     ];
     final variant = onSuccessVariant?.call(value);
     if (variant != null) {
-      extra.add(OTel.attributeString('feature_flag.variant', variant));
+      extra.add(OTelAPI.attributeString('feature_flag.variant', variant));
     }
-    span.addAttributes(OTel.attributes(extra));
+    span.addAttributes(OTelAPI.attributes(extra));
     return value;
   } catch (e, st) {
     span.addAttributes(
-      OTel.attributes([
-        OTel.attributeString(
-          ErrorResource.errorType.key,
+      OTelAPI.attributes([
+        OTelAPI.attributeString(
+          ErrorAttributes.errorType.key,
           e.runtimeType.toString(),
         ),
       ]),
